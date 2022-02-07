@@ -14,7 +14,7 @@ server.post("/api/users", async (req, res) => {
     } else {
       const newUser = await Users.insert({ name, bio })
       console.log(newUser)
-      res.json(newUser)
+      res.status(201).json(newUser)
     }
   } catch {
     res.status(500).json({
@@ -37,12 +37,12 @@ server.get("/api/users", async (req, res) => {
 server.get("/api/users/:id", async (req, res) => {
   try {
     const { id } = req.params
-    if (!id) {
+    const user = await Users.findById(id)
+    if (!user) {
       res
         .status(404)
         .json({ message: "The user with the specified ID does not exist" })
     } else {
-      const user = await Users.findById(id)
       res.json(user)
     }
   } catch {
@@ -55,12 +55,12 @@ server.get("/api/users/:id", async (req, res) => {
 server.delete("/api/users/:id", async (req, res) => {
   try {
     const { id } = req.params
-    if (!id) {
+    const rmUser = await Users.remove(id)
+    if (!rmUser) {
       res
         .status(404)
         .json({ message: "The user with the specified ID does not exist" })
     } else {
-      const rmUser = await Users.remove(id)
       res.json(rmUser)
     }
   } catch {
@@ -72,7 +72,8 @@ server.put("/api/users/:id", async (req, res) => {
   const { id } = req.params
   const { name, bio } = req.body
   try {
-    if (!id) {
+    const updatedUser = await Users.update(id, { name, bio })
+    if (!updatedUser) {
       res
         .status(404)
         .json({ message: "The user with the specified ID does not exist" })
@@ -81,7 +82,6 @@ server.put("/api/users/:id", async (req, res) => {
         .status(400)
         .json({ message: "Please provide name and bio for the user" })
     } else {
-      const updatedUser = await Users.update(id, { name, bio })
       res.status(200).json(updatedUser)
     }
   } catch {
