@@ -23,4 +23,15 @@ server.post("/api/users", async (req, res) => {
   }
 })
 
+server.get("/api/users", async (req, res) => {
+  try {
+    const users = await Users.find()
+    res.json(users)
+  } catch {
+    res
+      .status(500)
+      .json({ message: "The users information could not be retrieved" })
+  }
+})
+
 module.exports = server
